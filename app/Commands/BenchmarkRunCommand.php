@@ -251,7 +251,7 @@ final class BenchmarkRunCommand
         $benchmarkDir = __DIR__ . '/../../.benchmark/pr-' . $prNumber;
 
         if (is_dir($benchmarkDir)) {
-            $this->prLine($prNumber, "Removing existing benchmark directory...");
+            $this->prLine($prNumber, "Removing existing benchmark directory…");
             exec("rm -rf " . escapeshellarg($benchmarkDir));
         }
 
