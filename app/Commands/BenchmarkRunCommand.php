@@ -413,7 +413,7 @@ final class BenchmarkRunCommand
                     "You didn’t optimize. You *performed violence* (on latency). 🔪",
                 ];
 
-                $this->githubComment($prNumber, $messages[array_rand($messages)]);
+                $this->githubComment($prNumber, $messages[array_rand($messages)] . "<br>🏆 [{$file}](https://github.com/tempestphp/100-million-row-challenge/blob/main/{$file})");
             } else {
                 $data[$currentBranch] = [
                     'submissionTime' => $submissionTime,
