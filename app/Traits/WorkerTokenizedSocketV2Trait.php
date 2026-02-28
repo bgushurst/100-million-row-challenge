@@ -3,7 +3,7 @@
 namespace App\Traits;
 
 trait WorkerTokenizedSocketV2Trait {
-    private function work(int $start, int $end, int $index, $writeSocket): void
+    private function work(int $start, int $end, int $index, $writeSocket = null): array
     {
         $buckets = array_fill(0, $this->urlCount, '');
 
@@ -153,8 +153,12 @@ trait WorkerTokenizedSocketV2Trait {
         //$maxVal = count($counts) > 0 ? max($counts) : 0;
         $v16 = $maxVal <= 65535;
 
-        fwrite($writeSocket, $v16 ? "\x00" : "\x01");
-        $fmt = $v16 ? 'v*' : 'V*';
-        fwrite($writeSocket, pack($fmt, ...$counts));
+        if ($writeSocket !== null) {
+            fwrite($writeSocket, $v16 ? "\x00" : "\x01");
+            $fmt = $v16 ? 'v*' : 'V*';
+            fwrite($writeSocket, pack($fmt, ...$counts));
+        }
+
+        return $counts;
     }
 }

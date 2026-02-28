@@ -15,7 +15,7 @@ trait LoaderTokenizedSocketV1Trait {
 
         // Setup socket pairs before forking from parent process
         $socketPairs = [];
-        for ($i = 0; $i < $workerCount; $i++) {
+        for ($i = 0; $i < $workerCount - 1; $i++) {
             $pair = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
             if ($pair ===  false) {
                 throw new \RuntimeException("stream_socket_pair failed for worker $i");
@@ -25,7 +25,11 @@ trait LoaderTokenizedSocketV1Trait {
 
         // Fork workers
         $pids = [];
+        $lastIndex = $workerCount - 1;
+
         foreach ($chunks as $index => [$start, $end]) {
+            if ($index === $lastIndex) break;
+
             $pid = pcntl_fork();
 
             if ($pid === -1) {
@@ -51,8 +55,17 @@ trait LoaderTokenizedSocketV1Trait {
             $pids[$index] = $pid;
         }
 
+        // Parent process the last chunk while children run in parallel
+        [$lastStart, $lastEnd] = $chunks[$lastIndex];
+        $parentCounts = $this->work($lastStart, $lastEnd, $lastIndex, null);
+
         // Async merge loop
         $accumulator = $this->makeAccumulator();
+
+        foreach ($parentCounts as $i => $count) {
+            $accumulator[$i] += $count;
+        }
+
         $readSockets = [];
         $socketBuffers = [];
         $closed = [];
