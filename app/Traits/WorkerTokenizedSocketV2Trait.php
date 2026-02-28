@@ -68,140 +68,122 @@ trait WorkerTokenizedSocketV2Trait {
             $fence = $windowEnd - ((15 * 99) + 0);
 
             while ($wStart < $fence) {
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+
+                // MinLineLen = 35
+                // DOMAIN_LENGTH = 25
+                // DATE_WIDTH = 25
+                // DATE_LENGTH = 10
+                // $wEnd = strpos($window, "\n", $wStart + $minLineLen);
+                // $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                //     .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                // $wStart = $wEnd + 1;
+
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
                 $wStart = $wEnd + 1;
 
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
                 $wStart = $wEnd + 1;
 
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
                 $wStart = $wEnd + 1;
 
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
                 $wStart = $wEnd + 1;
 
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
-                $wStart = $wEnd + 1;
-
-                // --
-
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
-                $wStart = $wEnd + 1;
-
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
-                $wStart = $wEnd + 1;
-
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
-                $wStart = $wEnd + 1;
-
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
-                $wStart = $wEnd + 1;
-
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
                 $wStart = $wEnd + 1;
 
                 // --
 
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
                 $wStart = $wEnd + 1;
 
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
                 $wStart = $wEnd + 1;
 
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
                 $wStart = $wEnd + 1;
 
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
                 $wStart = $wEnd + 1;
 
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
                 $wStart = $wEnd + 1;
 
                 // --
 
-                if (($fastPathRows % 5000) === 0) {
-                    $rowLen = $wEnd - $wStart + 15; // approximate
-                    if ($rowLen > $maxRowLen) $maxRowLen = $rowLen;
-                    $totalRowBytes += $rowLen * 15;
-                    $rowCount += 15;
-                }
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
+                $wStart = $wEnd + 1;
 
-                $fastPathRows += 15;
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
+                $wStart = $wEnd + 1;
+
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
+                $wStart = $wEnd + 1;
+
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
+                $wStart = $wEnd + 1;
+
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
+                $wStart = $wEnd + 1;
+
+                // --
             }
 
             // Smaller unroll to compensate for much larger initial unroll
             $fence = $windowEnd - 200;
 
             while ($wStart < $fence) {
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
                 $wStart = $wEnd + 1;
 
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wEnd = strpos($window, "\n", $wStart + 35);
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
                 $wStart = $wEnd + 1;
             }
 
             // -- Cleanup loop for rows after the fence ----
             while ($wStart < $windowEnd) {
-                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-
+                $wEnd = strpos($window, "\n", $wStart + 35);
                 if ($wEnd === false || $wEnd > $windowEnd) break;
-
-                $urlToken = $urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)];
-                $dateChar = $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
-
-                $buckets[$urlToken] .= $dateChar;
-
-                $rowLen = $wEnd - $wStart;
-                if ($rowLen < $minRowLen) $minRowLen = $rowLen;
-                if ($rowLen > $maxRowLen) $maxRowLen = $rowLen;
-                $totalRowBytes += $rowLen;
-                $rowCount++;
-                $cleanupRows++;
-
+                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
+                    .= $dateChars[substr($window, $wEnd - 25, 10)];
                 $wStart = $wEnd + 1;
             }
         }
-
-        $avgRowLen = $rowCount > 0 ? $totalRowBytes / $rowCount : 0;
-        $totalRows = $fastPathRows + $cleanupRows;
-        $fastPct   = $totalRows > 0 ? ($fastPathRows / $totalRows) * 100 : 0;
-
-        fprintf(STDERR, "[worker %d] rows=%d fast=%.1f%% cleanup=%d min=%d max=%d avg=%.1f\n",
-            $index, $totalRows, $fastPct, $cleanupRows, $minRowLen, $maxRowLen, $avgRowLen);
 
         fclose($handle);
 

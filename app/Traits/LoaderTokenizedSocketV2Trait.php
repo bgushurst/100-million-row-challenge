@@ -72,7 +72,7 @@ trait LoaderTokenizedSocketV2Trait {
 
         // Parent Calibration
         $parentScore = $this->calibrate(self::CALIBRATION_DUR);
-        $parentScore *= 0.9;    // Parent load reduction to account for result accumulation
+        $parentScore *= 0.6;    // Parent load reduction to account for result accumulation
 
         // Phase 2: collect all calibration scores
         $scores = [];
