@@ -64,6 +64,9 @@ final class Parser
     {
         // Eliminate GC pauses mid-parse
         gc_disable();
+
+        // Disable library error handler from killing the process on intentionally suppressed errors
+        set_error_handler(null);
     }
 
     public function parse(string $inputPath, string $outputPath): void

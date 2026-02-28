@@ -22,7 +22,10 @@ trait LoaderTokenizedShmopV1Trait {
         $totalSize = $workerCount * $sliceSize;
         $shmKey = ftok(__FILE__, 'p');
 
-        $shm = shmop_open($shmKey, 'c', 0600, $totalSize);
+        if ($shm = @shmop_open($shmKey, 'a', 0644, 0))
+            shmop_delete($shm);
+
+        $shm = shmop_open($shmKey, 'n', 0644, $totalSize);
         if ($shm === false) {
             throw new \RuntimeException("shmop_open failed");
         }
