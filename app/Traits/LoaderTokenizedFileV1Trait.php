@@ -7,36 +7,19 @@ use function strpos;
 use function strlen;
 use const SEEK_CUR;
 
-/**
- * While this showed promise locally, it seems the Mac Mini
- * system defaults set the max shared memory allocation far
- * too small to be useful for this application. Converting
- * this over to use /tmp/ files for communication instead
- */
-trait LoaderTokenizedShmopV1Trait {
+trait LoaderTokenizedFileV1Trait {
     private function load(): array
     {
         $chunks = $this->calculateChunkBoundaries();
         $workerCount = count($chunks);  // Derived from self::WORKER_COUNT
 
-        // -- Setup shared memory ----
+        // -- Setup temporary file ----
+        $tmpDir = is_dir('/dev/shm') && is_writable('/dev/shm') ? '/dev/shm' : sys_get_temp_dir();
+        $runId = uniqid('bg_loader_', true);
 
-        // Round up to nearest 128 bytes to match M1 cache line size
-        $rawSlice = $this->urlCount * $this->dateCount * 4;
-        $sliceSize = (int) ceil($rawSlice/128) * 128;
-
-        $totalSize = $workerCount * $sliceSize;
-
-        $shmKey = ftok(__FILE__, 'p');
-
-        if ($shm = @shmop_open($shmKey, 'a', 0644, 0)) {
-            shmop_delete($shm);
-            unset($shm);
-        }
-
-        $shm = shmop_open($shmKey, 'n', 0644, $totalSize);
-        if ($shm === false) {
-            throw new \RuntimeException("shmop_open failed");
+        $workerFiles = [];
+        for ($i = 0; $i < $workerCount; $i++) {
+            $workerFiles[$i] = "{$tmpDir}/{$runId}_worker$i.bin";
         }
 
         // Fork workers
@@ -54,7 +37,7 @@ trait LoaderTokenizedShmopV1Trait {
 
             if ($pid === 0) {
                 // Child process
-                $this->work($start, $end, $index, $shm, $sliceSize);
+                $this->work($start, $end, $index, $workerFiles[$index]);
                 exit(0);
             }
 
@@ -64,23 +47,26 @@ trait LoaderTokenizedShmopV1Trait {
 
         // Parent process the last chunk while children run in parallel
         [$lastStart, $lastEnd] = $chunks[$lastIndex];
-        $this->work($lastStart, $lastEnd, $lastIndex, $shm, $sliceSize);
+        $this->work($lastStart, $lastEnd, $lastIndex, $workerFiles[$lastIndex]);
 
         // All forks closed
         foreach ($pids as $pid) {
             pcntl_waitpid($pid, $status);
         }
 
+        $rawSlice = $this->urlCount * $this->dateCount * 4;
         $accumulator = $this->makeAccumulator();
 
         for ($i = 0; $i < $workerCount; $i++) {
+            $path = $workerFiles[$i];
+
+            $data = file_get_contents($path);
+
             $j = 0;
-            foreach (unpack('V*', shmop_read($shm, $i * $sliceSize, $rawSlice)) as $v) {
+            foreach (unpack('V*', substr($data, 0, $rawSlice)) as $v) {
                 $accumulator[$j++] += $v;
             }
         }
-
-        shmop_delete($shm);
 
         return $accumulator;
     }

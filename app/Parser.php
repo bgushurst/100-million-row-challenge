@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Traits\LoaderTokenizedFileV1Trait;
+use App\Traits\WorkerTokenizedFileV1Trait;
 use App\Traits\WorkerTokenizedShmopV1Trait;
+use App\Traits\WorkerTokenizedSocketV1Trait;
 use App\Traits\WriterTokenizedV1Trait;
 use App\Traits\SetupTokenizedV1Trait;
 use App\Traits\LoaderTokenizedSocketV1Trait;
@@ -46,13 +49,15 @@ final class Parser
     // Tokenized Socket Implementation
 //    use SetupTokenizedV1Trait;
 //    use LoaderTokenizedSocketV1Trait;
+//    use WorkerTokenizedSocketV1Trait;
 //    use WriterTokenizedV1Trait;
 
-    // Tokenized SHMOP Implementation
+    // Tokenized File Implementation
     use SetupTokenizedV1Trait;
-    use LoaderTokenizedShmopV1Trait;
-    use WorkerTokenizedShmopV1Trait;
+    use LoaderTokenizedFileV1Trait;
+    use WorkerTokenizedFileV1Trait;
     use WriterTokenizedV1Trait;
+
 
     /**
      * This is the main data structure that is populated by the load
