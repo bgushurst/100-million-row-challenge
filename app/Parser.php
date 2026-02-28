@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Traits\LoaderTokenizedFileV1Trait;
+use App\Traits\LoaderTokenizedSocketV2Trait;
 use App\Traits\WorkerTokenizedFileV1Trait;
 use App\Traits\WorkerTokenizedShmopV1Trait;
 use App\Traits\WorkerTokenizedSocketV1Trait;
@@ -28,6 +29,7 @@ final class Parser
 
     // Tuning configurations
     const int WORKER_COUNT      = 8;                    // Should match physical core count
+    const int CALIBRATION_DUR   = 50;                   // 50ms overhead time for calibrating chunk boundaries
     const int WRITE_BUFFER      = 128 * 1024;           // 128kb output write buffer
     const int PRESCAN_BUFFER    = 256 * 1024;           // 256kb - enough to see all 269 urls
     const int READ_BUFFER       = 64 * 1024 * 1024;     // 64mb - Bumping up since we have 12gb of memory available
@@ -49,7 +51,7 @@ final class Parser
 
     // Tokenized Socket Implementation
     use SetupTokenizedV1Trait;
-    use LoaderTokenizedSocketV1Trait;
+    use LoaderTokenizedSocketV2Trait;
     use WorkerTokenizedSocketV2Trait;
     use WriterTokenizedV1Trait;
 
@@ -72,7 +74,7 @@ final class Parser
         gc_disable();
 
         // Disable library error handler from killing the process on intentionally suppressed errors
-        set_error_handler(null);
+        // set_error_handler(null);
     }
 
     public function parse(string $inputPath, string $outputPath): void

@@ -2,6 +2,14 @@
 
 namespace App\Traits;
 
+/**
+ * V2 Goals
+ * -
+ *
+ * Trying to account for the difference in processing speed between performance and economy
+ * cores so that we're not sitting around waiting for the 4 economy cores because we assigned
+ * all cores the same workload. We're taking a 50ms hit on overhead to assign work optimally.
+ */
 trait WorkerTokenizedSocketV2Trait {
     private function work(int $start, int $end, int $index, $writeSocket = null): array
     {
@@ -53,54 +61,117 @@ trait WorkerTokenizedSocketV2Trait {
             $windowEnd = $lastNl;
             $wStart = 0;
 
-            // 5x Unrolled fast path
+            // Original 5x unrolled fence value
             //$fence = $windowEnd - 600;
-            $fence = $windowEnd - ((7 * 99) + 8);
+
+            // Optimized fence value - (unroll_factor * maxRowLen) + buffer
+            $fence = $windowEnd - ((15 * 99) + 0);
 
             while ($wStart < $fence) {
                 $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)] ?? -1]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)] ?? '';
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
                 $wStart = $wEnd + 1;
 
                 $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)] ?? -1]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)] ?? '';
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
                 $wStart = $wEnd + 1;
 
                 $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)] ?? -1]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)] ?? '';
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
                 $wStart = $wEnd + 1;
 
                 $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)] ?? -1]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)] ?? '';
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
                 $wStart = $wEnd + 1;
 
                 $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)] ?? -1]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)] ?? '';
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wStart = $wEnd + 1;
+
+                // --
+
+                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
                 $wStart = $wEnd + 1;
 
                 $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)] ?? -1]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)] ?? '';
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
                 $wStart = $wEnd + 1;
 
                 $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)] ?? -1]
-                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)] ?? '';
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
                 $wStart = $wEnd + 1;
+
+                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wStart = $wEnd + 1;
+
+                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wStart = $wEnd + 1;
+
+                // --
+
+                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wStart = $wEnd + 1;
+
+                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wStart = $wEnd + 1;
+
+                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wStart = $wEnd + 1;
+
+                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wStart = $wEnd + 1;
+
+                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wStart = $wEnd + 1;
+
+                // --
 
                 if (($fastPathRows % 5000) === 0) {
-                    $rowLen = $wEnd - $wStart + 5; // approximate
+                    $rowLen = $wEnd - $wStart + 15; // approximate
                     if ($rowLen > $maxRowLen) $maxRowLen = $rowLen;
-                    $totalRowBytes += $rowLen * 5;
-                    $rowCount += 5;
+                    $totalRowBytes += $rowLen * 15;
+                    $rowCount += 15;
                 }
 
-                $fastPathRows += 5;
+                $fastPathRows += 15;
+            }
+
+            // Smaller unroll to compensate for much larger initial unroll
+            $fence = $windowEnd - 200;
+
+            while ($wStart < $fence) {
+                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wStart = $wEnd + 1;
+
+                $wEnd = strpos($window, "\n", $wStart + $minLineLen);
+                $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
+                    .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
+                $wStart = $wEnd + 1;
             }
 
             // -- Cleanup loop for rows after the fence ----
@@ -109,12 +180,10 @@ trait WorkerTokenizedSocketV2Trait {
 
                 if ($wEnd === false || $wEnd > $windowEnd) break;
 
-                $urlToken = $urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)] ?? null;
-                $dateChar = $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)] ?? null;
+                $urlToken = $urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)];
+                $dateChar = $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
 
-                if ($urlToken !== null && $dateChar !== null) {
-                    $buckets[$urlToken] .= $dateChar;
-                }
+                $buckets[$urlToken] .= $dateChar;
 
                 $rowLen = $wEnd - $wStart;
                 if ($rowLen < $minRowLen) $minRowLen = $rowLen;
@@ -154,9 +223,9 @@ trait WorkerTokenizedSocketV2Trait {
         $v16 = $maxVal <= 65535;
 
         if ($writeSocket !== null) {
-            fwrite($writeSocket, $v16 ? "\x00" : "\x01");
+            $prefix = $v16 ? "\x00" : "\x01";
             $fmt = $v16 ? 'v*' : 'V*';
-            fwrite($writeSocket, pack($fmt, ...$counts));
+            fwrite($writeSocket, $prefix . pack($fmt, ...$counts));
         }
 
         return $counts;
