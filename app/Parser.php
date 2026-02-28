@@ -8,6 +8,7 @@ use App\Traits\LoaderTokenizedFileV1Trait;
 use App\Traits\WorkerTokenizedFileV1Trait;
 use App\Traits\WorkerTokenizedShmopV1Trait;
 use App\Traits\WorkerTokenizedSocketV1Trait;
+use App\Traits\WorkerTokenizedSocketV2Trait;
 use App\Traits\WriterTokenizedV1Trait;
 use App\Traits\SetupTokenizedV1Trait;
 use App\Traits\LoaderTokenizedSocketV1Trait;
@@ -49,7 +50,7 @@ final class Parser
     // Tokenized Socket Implementation
     use SetupTokenizedV1Trait;
     use LoaderTokenizedSocketV1Trait;
-    use WorkerTokenizedSocketV1Trait;
+    use WorkerTokenizedSocketV2Trait;
     use WriterTokenizedV1Trait;
 
     // Tokenized File Implementation
