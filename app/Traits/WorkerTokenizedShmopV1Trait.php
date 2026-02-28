@@ -12,9 +12,6 @@ trait WorkerTokenizedShmopV1Trait {
         stream_set_read_buffer($handle, 0);
         fseek($handle, $start);
 
-        $totalRowCount = 0;
-        $tReadTotal = 0;
-
         // Hoist these properties to prevent Zend engine hash lookups from $this within the hot path
         $urlTokens  = $this->urlTokens;
         $dateChars  = $this->dateChars;
@@ -75,8 +72,6 @@ trait WorkerTokenizedShmopV1Trait {
                 $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)] ?? -1]
                     .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)] ?? '';
                 $wStart = $wEnd + 1;
-
-                $totalRowCount += 5;
             }
 
             // -- Cleanup loop for rows after the fence ----
@@ -91,7 +86,6 @@ trait WorkerTokenizedShmopV1Trait {
                 $buckets[$urlToken] .= $dateChar;
 
                 $wStart = $wEnd + 1;
-                $totalRowCount++;
             }
         }
 
