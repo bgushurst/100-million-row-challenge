@@ -12,6 +12,10 @@ trait SetupTokenizedV1Trait {
     const int DATE_RANGE_YEARS = 5;
     const int DATE_RANGE_BUFFER_MONTHS = 6;
 
+    /**
+     * While there are optimizations to be made here, this code is currently
+     * running in around 9ms so there is no point in optimizing it.
+     */
     private function setup(): void
     {
         // Hoist any class variables

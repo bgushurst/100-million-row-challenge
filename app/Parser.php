@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Traits\WorkerTokenizedShmopV1Trait;
 use App\Traits\WriterTokenizedV1Trait;
 use App\Traits\SetupTokenizedV1Trait;
 use App\Traits\LoaderTokenizedSocketV1Trait;
 use App\Traits\LoaderTokenizedSocketV1iTrait;
-use App\Traits\LoaderTokenizedShmopV1;
+use App\Traits\LoaderTokenizedShmopV1Trait;
 
 final class Parser
 {
@@ -43,14 +44,15 @@ final class Parser
     private int $minLineLength          = 35;
 
     // Tokenized Socket Implementation
-    use SetupTokenizedV1Trait;
-    use LoaderTokenizedSocketV1Trait;
-    use WriterTokenizedV1Trait;
+//    use SetupTokenizedV1Trait;
+//    use LoaderTokenizedSocketV1Trait;
+//    use WriterTokenizedV1Trait;
 
     // Tokenized SHMOP Implementation
-//    use SetupTokenizedV1Trait;
-//    use LoaderTokenizedShmopV1;
-//    use WriterTokenizedV1Trait;
+    use SetupTokenizedV1Trait;
+    use LoaderTokenizedShmopV1Trait;
+    use WorkerTokenizedShmopV1Trait;
+    use WriterTokenizedV1Trait;
 
     /**
      * This is the main data structure that is populated by the load
@@ -70,13 +72,19 @@ final class Parser
         $this->outputPath = $outputPath;
 
         // -- Phase 0: Setup ----
+        $t0 = hrtime(true);
         $this->setup();
+        printf("Setup took %.2fms\n", (hrtime(true) - $t0) / 1e6);
 
         // -- Phase 1: Load the data ----
+        $t0 = hrtime(true);
         $this->data = $this->load();
+        printf("Load  took %.2fms\n", (hrtime(true) - $t0) / 1e6);
 
         // -- Phase 3: Write Output ----
+        $t0 = hrtime(true);
         $this->write();
+        printf("Write took %.2fms\n", (hrtime(true) - $t0) / 1e6);
     }
 
 }

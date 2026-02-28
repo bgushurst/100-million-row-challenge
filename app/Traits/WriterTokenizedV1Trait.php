@@ -4,6 +4,9 @@ namespace App\Traits;
 
 trait WriterTokenizedV1Trait {
 
+    /**
+     * This writer version is currently running in around 165ms
+     */
     private function write(): void
     {
         // Hoist any class variables

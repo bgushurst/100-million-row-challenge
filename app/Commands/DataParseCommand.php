@@ -5,7 +5,6 @@ namespace App\Commands;
 use App\Parser;
 use Tempest\Console\ConsoleCommand;
 use Tempest\Console\HasConsole;
-use Tempest\Log\Logger;
 
 final class DataParseCommand
 {
