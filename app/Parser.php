@@ -26,7 +26,7 @@ final class Parser
     const int DATE_WIDTH        = 25;   // Full datetime column width inc. time component
 
     // Tuning configurations
-    const int WORKER_COUNT      = 8;                    // Should match physical core count
+    const int WORKER_COUNT      = 10;                    // Should match physical core count
     const int WRITE_BUFFER      = 128 * 1024;           // 128kb output write buffer
     const int PRESCAN_BUFFER    = 256 * 1024;           // 256kb - enough to see all 269 urls
     const int READ_BUFFER       = 64 * 1024 * 1024;     // 64mb - Bumping up since we have 12gb of memory available
@@ -47,16 +47,16 @@ final class Parser
     private int $minLineLength          = 35;
 
     // Tokenized Socket Implementation
-//    use SetupTokenizedV1Trait;
-//    use LoaderTokenizedSocketV1Trait;
-//    use WorkerTokenizedSocketV1Trait;
-//    use WriterTokenizedV1Trait;
+    use SetupTokenizedV1Trait;
+    use LoaderTokenizedSocketV1Trait;
+    use WorkerTokenizedSocketV1Trait;
+    use WriterTokenizedV1Trait;
 
     // Tokenized File Implementation
-    use SetupTokenizedV1Trait;
-    use LoaderTokenizedFileV1Trait;
-    use WorkerTokenizedFileV1Trait;
-    use WriterTokenizedV1Trait;
+//    use SetupTokenizedV1Trait;
+//    use LoaderTokenizedFileV1Trait;
+//    use WorkerTokenizedFileV1Trait;
+//    use WriterTokenizedV1Trait;
 
 
     /**
