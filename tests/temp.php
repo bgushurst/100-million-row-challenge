@@ -2,11 +2,11 @@
 
 namespace Tests;
 
-use App\Traits\LoaderLegacyTrait;
+use App\Traits\LoaderLegacyTraitV2;
 use App\Traits\SettingsLocal;
 use App\Traits\SettingsMacMini;
 use App\Traits\SetupSerializedTrait;
-use App\Traits\WorkerLegacyTrait;
+use App\Traits\WorkerLegacyTraitV2;
 use App\Traits\WriterTokenizedV1Trait;
 
 /**
@@ -17,8 +17,8 @@ class Temp {
     use SettingsMacMini;
     //use SettingsLocal;
     use SetupSerializedTrait;
-    use LoaderLegacyTrait;
-    use WorkerLegacyTrait;
+    use LoaderLegacyTraitV2;
+    use WorkerLegacyTraitV2;
     use WriterTokenizedV1Trait;
 
     public function __construct()
@@ -30,9 +30,6 @@ class Temp {
     {
         $this->inputPath = $inputPath;
         $this->outputPath = $outputPath;
-
-        $outputSize =  1076289;
-        $maxSegSize = 4 * 1024 * 1024;
 
         // -- Phase 0: Setup ----
         $t0 = hrtime(true);
