@@ -2,13 +2,8 @@
 
 namespace App\Traits;
 
-/**
- * V3
- *
- * I hate that this is faster...
- */
-trait WorkerTokenizedSocketV3Trait {
-    private function work(int $start, int $end, int $index, $writeSocket = null): array
+trait WorkerLegacyTrait {
+    private function work(int $start, int $end, int $index, string $outPath): void
     {
         $buckets = array_fill(0, $this->urlCount, '');
 
@@ -45,17 +40,8 @@ trait WorkerTokenizedSocketV3Trait {
 
             $remaining -= ($windowLen - $tail);
 
-            // MinLineLen = 35
-            // DOMAIN_LENGTH = 25
-            // DATE_WIDTH = 25
-            // DATE_LENGTH = 10
-            // $wEnd = strpos($window, "\n", $wStart + $minLineLen);
-            // $buckets[$urlTokens[substr($window, $wStart + self::DOMAIN_LENGTH, $wEnd - $wStart - self::DOMAIN_LENGTH - self::DATE_WIDTH - 1)]]
-            //     .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
-            // $wStart = $wEnd + 1;
-
             // Use the optimization at C level already done here with a single system call
-            // SO annoyed that this is faster at least locally.
+            // I'm very annoyed that this is faster ...
             preg_match_all('/blog\/([^,]+),(\d{4}-\d{2}-\d{2})/', $window, $m);
 
             $slugs = $m[1];
@@ -82,19 +68,7 @@ trait WorkerTokenizedSocketV3Trait {
             }
         }
 
-        // Send flat counts to parent via socket
-        //$maxVal = count($counts) > 0 ? max($counts) : 0;
-        $v16 = $maxVal <= 65535;
-
-        if ($writeSocket !== null) {
-            $prefix = $v16 ? "\x00" : "\x01";
-            $fmt = $v16 ? 'v*' : 'V*';
-            $output = $prefix . pack($fmt, ...$counts);
-            fwrite($writeSocket, $output);
-
-            print("Worker $index Output: len: " . strlen($output) . " max: ").PHP_EOL;
-        }
-
-        return $counts;
+        // Send flat counts to parent via file
+        file_put_contents($outPath, pack('V*', ...$counts));
     }
 }

@@ -12,7 +12,6 @@ use App\Traits\WorkerTokenizedFileV1Trait;
 use App\Traits\WorkerTokenizedShmopV1Trait;
 use App\Traits\WorkerTokenizedSocketV1Trait;
 use App\Traits\WorkerTokenizedSocketV2Trait;
-use App\Traits\WorkerTokenizedSocketV3Trait;
 use App\Traits\WriterTokenizedV1Trait;
 use App\Traits\SetupTokenizedV1Trait;
 use App\Traits\LoaderTokenizedSocketV1Trait;
@@ -31,11 +30,11 @@ final class Parser
     const int DATE_WIDTH        = 25;   // Full datetime column width inc. time component
 
     // Tuning configurations
-    const int WORKER_COUNT      = 10;                    // Should match physical core count
+    const int WORKER_COUNT      = 20;                    // Should match physical core count
     const int CALIBRATION_DUR   = 100;                   // 50ms overhead time for calibrating chunk boundaries
     const int WRITE_BUFFER      = 128 * 1024;           // 128kb output write buffer
     const int PRESCAN_BUFFER    = 256 * 1024;           // 256kb - enough to see all 269 urls
-    const int READ_BUFFER       = 64 * 1024 * 1024;     // 64mb - Bumping up since we have 12gb of memory available
+    const int READ_BUFFER       = 16 * 1024 * 1024;     // 64mb - Bumping up since we have 12gb of memory available
 
     // Token Tables
     private array $urlPool              = [];   // url_string -> true
@@ -55,7 +54,7 @@ final class Parser
     // Tokenized Socket Implementation
     use SetupTokenizedV1Trait;
     use LoaderTokenizedSocketV2Trait;
-    use WorkerTokenizedSocketV3Trait;
+    use WorkerTokenizedSocketV2Trait;
     use WriterTokenizedV1Trait;
 
     // Tokenized File Implementation
@@ -69,6 +68,11 @@ final class Parser
 //    use SetupTokenizedV1Trait;
 //    use LoaderHybridV1Trait;
 //    use WorkerHybridV1Trait;
+//    use WriterTokenizedV1Trait;
+
+    // Meme
+//    use SetupTokenizedV1Trait;
+//    use MemeTrait;
 //    use WriterTokenizedV1Trait;
 
     /**

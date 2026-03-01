@@ -14,17 +14,16 @@ trait WriterTokenizedV1Trait {
         $outputPath = $this->outputPath;
 
         // Build json key caches
-        if ($this->urlJsonKeys === []) {
-            for ($i = 0; $i < $this->urlCount; $i++) {
-                $this->urlJsonKeys[$i] = '    "\\/blog\\/' . str_replace('/', '\/', $this->urlStrings[$i]) . "\": {\n";
-            }
+        $urlJson = [];
+        for ($i = 0; $i < $this->urlCount; $i++) {
+            $urlJson[$i] = '    "\\/blog\\/' . str_replace('/', '\/', $this->urlStrings[$i]) . "\": {\n";
         }
 
-        if ($this->dateJsonPrefixes === []) {
-            for ($i = 0; $i < $this->dateCount; $i++) {
-                $this->dateJsonPrefixes[$i] = '        "' . $this->dateStrings[$i] . '": ';
-            }
+        $dateJson = [];
+        for ($i = 0; $i < $this->dateCount; $i++) {
+            $dateJson[$i] = '        "' . $this->dateStrings[$i] . '": ';
         }
+
 
         $lastActiveUrlToken = -1;
         for ($urlToken = $this->urlCount - 1; $urlToken >= 0; $urlToken--) {
@@ -58,11 +57,11 @@ trait WriterTokenizedV1Trait {
             for ($d = 0; $d < $this->dateCount; $d++) {
                 $count = $accumulator[$base + $d];
                 if ($count === 0) continue;
-                $dateBuf .= $this->dateJsonPrefixes[$d] . $count . ",\n";
+                $dateBuf .= $dateJson[$d] . $count . ",\n";
             }
             if ($dateBuf === '') continue;
 
-            $buf .= $this->urlJsonKeys[$urlToken]
+            $buf .= $urlJson[$urlToken]
                 . substr($dateBuf, 0, -2)  . "\n"
                 . ($isLastUrl ? "    }\n" : "    },\n");
 
