@@ -28,34 +28,34 @@ trait WorkerLegacyTraitV2 {
 
             // -- Read one window ----
             $toRead = min($remaining, self::READ_BUFFER);
-            $window = fread($handle, $toRead);
+            $chunk = fread($handle, $toRead);
 
-            if ($window === false || $window === '') break;
+            if ($chunk === false || $chunk === '') break;
 
-            $windowLen = strlen($window);
-            $lastNl = strrpos($window, "\n");
+            $chunkLen = strlen($chunk);
+            $lastNl = strrpos($chunk, "\n");
 
             if ($lastNl === false) {
-                $remaining -= $windowLen;
+                $remaining -= $chunkLen;
                 continue;
             }
 
-            $tail = $windowLen - $lastNl - 1;
+            $tail = $chunkLen - $lastNl - 1;
             if ($tail > 0) {
                 fseek($handle, -$tail, SEEK_CUR);
             }
 
-            $remaining -= ($windowLen - $tail);
-            $windowEnd = $lastNl;
-            $wStart = 0;
+            $remaining -= ($chunkLen - $tail);
+            $chunkEnd = $lastNl;
+            $rowOffset = 0;
 
             // Original 5x unrolled fence value
             //$fence = $windowEnd - 600;
 
             // Optimized fence value - (unroll_factor * maxRowLen) + buffer
-            $fence = $windowEnd - ((15 * 99) + 0);
+            $fence = $chunkEnd - ((15 * 99) + 0);
 
-            while ($wStart < $fence) {
+            while ($rowOffset < $fence) {
 
                 // MinLineLen = 35
                 // DOMAIN_LENGTH = 25
@@ -66,110 +66,118 @@ trait WorkerLegacyTraitV2 {
                 //     .= $dateChars[substr($window, $wEnd - self::DATE_WIDTH, self::DATE_LENGTH)];
                 // $wStart = $wEnd + 1;
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+//                $rowComma = strpos($chunk, ",", $rowOffset + 30); // MinUrlSlug (5) + Domain Prefix (25)
+//
+//                echo "#$index Full Line: " . substr($chunk, $rowOffset, 120) . "\n";
+//                echo "#$index URL: " . substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25) . "\n";
+//                echo "#$index Date: " . substr($chunk, $rowComma + 1,10) . "\n";
+//                echo "#$index Next Line: " . substr($chunk, $rowComma + 27, 100) . "\n";
+//                exit;
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                // --
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                //
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                // --
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                //
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                // --
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
+
+                //
             }
 
             // Smaller unroll to compensate for much larger initial unroll
-            $fence = $windowEnd - 200;
+            $fence = $chunkEnd - 200;
 
-            while ($wStart < $fence) {
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+            while ($rowOffset < $fence) {
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
 
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
             }
 
             // -- Cleanup loop for rows after the fence ----
-            while ($wStart < $windowEnd) {
-                $wEnd = strpos($window, "\n", $wStart + 35);
-                if ($wEnd === false || $wEnd > $windowEnd) break;
-                $buckets[$urlTokens[substr($window, $wStart + 25, $wEnd - $wStart - 51)]]
-                    .= $dateChars[substr($window, $wEnd - 25, 10)];
-                $wStart = $wEnd + 1;
+            while ($rowOffset < $chunkEnd) {
+                $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
+                if ($rowComma === false || $rowComma + 27 > $chunkEnd) break;
+                $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
+                    .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
+                $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
             }
         }
 
