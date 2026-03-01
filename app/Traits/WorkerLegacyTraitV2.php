@@ -174,7 +174,7 @@ trait WorkerLegacyTraitV2 {
             // -- Cleanup loop for rows after the fence ----
             while ($rowOffset < $chunkEnd) {
                 $rowComma = strpos($chunk, ",", $rowOffset + 29); // MinUrlSlug (4) + Domain Prefix (25)
-                if ($rowComma === false || $rowComma + 27 > $chunkEnd) break;
+                if ($rowComma === false || $rowComma + 26 > $chunkEnd) break;
                 $buckets[$urlTokens[substr($chunk, $rowOffset + 25, $rowComma - $rowOffset - 25)]]  // Start after Domain/blog and capture from blog/ to comma
                     .= $dateChars[substr($chunk, $rowComma + 1,10)];    // Capture prefix of date right after the comma
                 $rowOffset = $rowComma + 27;   // Timestamp width + 1 for comma + 1 for newline
