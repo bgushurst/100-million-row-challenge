@@ -17,7 +17,7 @@ trait SettingsLocal {
     const int SHM_MAX_SEGMENT_SIZE = 32 * 1024 * 1024;
 
     const int CALIBRATION_DUR               = 50;
-    const float CALIBRATION_PARENT_FACTOR   = 0.8;
+    const float CALIBRATION_PARENT_FACTOR   = 0.95;
 
     // Token Tables
     private array $urlPool              = [];   // url_string -> true

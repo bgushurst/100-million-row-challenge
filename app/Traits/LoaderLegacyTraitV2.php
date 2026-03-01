@@ -138,8 +138,6 @@ trait LoaderLegacyTraitV2 {
             pcntl_waitpid($pid, $status, WNOHANG);
         }
 
-        throw new \Exception("Calibration: ".print_r($scores, true) . ' Total: ' . $totalScore);
-
         return $merged;
     }
 
