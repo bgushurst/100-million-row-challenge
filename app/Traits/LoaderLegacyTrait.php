@@ -11,7 +11,7 @@ trait LoaderLegacyTrait {
         $workerCount = self::WORKER_COUNT -1;
 
         // -- Shared Memory Layout ----
-        $workerDataBytes = $this->urlCount * $this->dateCount * 2;
+        $workerDataBytes = $this->urlCount * $this->dateCount;
         $workersPerSegment = max(1, (int) floor(self::SHM_MAX_SEGMENT_SIZE / $workerDataBytes));
         $segmentCount = (int) ceil($workerCount / $workersPerSegment);
 
@@ -157,7 +157,7 @@ trait LoaderLegacyTrait {
                     $workerDataBytes
                 );
 
-                foreach (array_values(unpack('v*', $raw)) as $j => $count) {
+                foreach (array_values(unpack('C*', $raw)) as $j => $count) {
                     $merged[$j] += $count;
                 }
 

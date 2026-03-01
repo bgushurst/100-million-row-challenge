@@ -178,23 +178,27 @@ trait WorkerLegacyTrait {
 
         // Convert buckets to flat counts array
         $counts = array_fill(0, $this->urlCount * $this->dateCount, 0);
+        $maxVal = 0;
 
         for ($s = 0; $s < $this->urlCount; $s++) {
             if ($buckets[$s] === '') continue;
             $base = $s * $this->dateCount;
             foreach (array_count_values(unpack('v*', $buckets[$s])) as $dateId => $count) {
                 $counts[$base + $dateId] = $count;
+                if ($count > $maxVal) $maxVal = $count;
             }
         }
 
         if ($shmSegment !== null) {
-            shmop_write($shmSegment, pack('v*', ...$counts), $shmOffset);
+            shmop_write($shmSegment, pack('C*', ...$counts), $shmOffset);
 
             // Ping parent that we're done
             if ($controlSocket !== null) {
                 fwrite($controlSocket, "\x01");
             }
         }
+
+        print("Worker $index max: $maxVal").PHP_EOL;
 
         return $counts;
     }

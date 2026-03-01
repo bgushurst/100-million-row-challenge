@@ -17,7 +17,7 @@ trait SettingsMacMini {
     const int SHM_MAX_SEGMENT_SIZE = 4 * 1024 * 1024;
 
     const int CALIBRATION_DUR               = 50;
-    const float CALIBRATION_PARENT_FACTOR   = 0.8;
+    const float CALIBRATION_PARENT_FACTOR   = 0.9;
 
     // Token Tables
     private array $urlPool              = [];   // url_string -> true
