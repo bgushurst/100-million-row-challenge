@@ -82,6 +82,7 @@ trait LoaderLegacyTraitV2 {
         $totalScore = array_sum($scores);
 
         fprintf(STDERR, "Calibration: [%s] total=%d\n", implode(', ', $scores), $totalScore);
+        throw new \Exception("Calibration: ".print_r($scores, true) . ' Total: ' . $totalScore);
 
         // Phase 3: Calculate boundaries based on calibration scores
         $fileSize = filesize($inputPath);
