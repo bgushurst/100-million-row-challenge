@@ -16,7 +16,7 @@ trait WriterTokenizedV1Trait {
         // Build json key caches
         $urlJson = [];
         for ($i = 0; $i < $this->urlCount; $i++) {
-            $urlJson[$i] = '    "\\/blog\\/' . str_replace('/', '\/', $this->urlStrings[$i]) . "\": {\n";
+            $urlJson[$i] = '    "\\/blog\\/' . str_replace('/', '\/', $this->urlStrings[$i] ?? '') . "\": {\n";
         }
 
         $dateJson = [];

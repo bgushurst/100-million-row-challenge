@@ -8,7 +8,7 @@ trait SettingsMacMini {
     private ?string $outputPath = null;
 
     // Tuning configurations
-    const int WORKER_COUNT      = 8;                    // Should match physical core count
+    const int WORKER_COUNT      = 10;                    // Should match physical core count
     const int PRESCAN_BUFFER    = 256 * 1024;           // 256kb - just enough to see all 268 urls
     const int READ_BUFFER       = 64 * 1024 * 1024;     // 64mb - Bumping up since we have 12gb of memory available
     const int WRITE_BUFFER      = 128 * 1024;

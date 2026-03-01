@@ -42,7 +42,8 @@ trait WorkerLegacyTrait {
 
             // Use the optimization at C level already done here with a single system call
             // I'm very annoyed that this is faster ...
-            preg_match_all('/blog\/([^,]+),(\d{4}-\d{2}-\d{2})/', $window, $m);
+            $safeWindow = substr($window, 0, $lastNl + 1);
+            preg_match_all('/blog\/([^,]+),(\d{4}-\d{2}-\d{2})/', $safeWindow, $m);
 
             $slugs = $m[1];
             $dates = $m[2];
