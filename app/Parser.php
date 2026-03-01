@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Traits\LoaderHybridV1Trait;
 use App\Traits\LoaderTokenizedFileV1Trait;
 use App\Traits\LoaderTokenizedSocketV2Trait;
+use App\Traits\WorkerHybridV1Trait;
 use App\Traits\WorkerTokenizedFileV1Trait;
 use App\Traits\WorkerTokenizedShmopV1Trait;
 use App\Traits\WorkerTokenizedSocketV1Trait;
 use App\Traits\WorkerTokenizedSocketV2Trait;
+use App\Traits\WorkerTokenizedSocketV3Trait;
 use App\Traits\WriterTokenizedV1Trait;
 use App\Traits\SetupTokenizedV1Trait;
 use App\Traits\LoaderTokenizedSocketV1Trait;
@@ -52,7 +55,7 @@ final class Parser
     // Tokenized Socket Implementation
     use SetupTokenizedV1Trait;
     use LoaderTokenizedSocketV2Trait;
-    use WorkerTokenizedSocketV2Trait;
+    use WorkerTokenizedSocketV3Trait;
     use WriterTokenizedV1Trait;
 
     // Tokenized File Implementation
@@ -61,6 +64,12 @@ final class Parser
 //    use WorkerTokenizedFileV1Trait;
 //    use WriterTokenizedV1Trait;
 
+
+    // Tokenized Hybrid Implementation
+//    use SetupTokenizedV1Trait;
+//    use LoaderHybridV1Trait;
+//    use WorkerHybridV1Trait;
+//    use WriterTokenizedV1Trait;
 
     /**
      * This is the main data structure that is populated by the load
