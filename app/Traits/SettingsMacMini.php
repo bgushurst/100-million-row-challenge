@@ -22,11 +22,13 @@ trait SettingsMacMini {
     // Token Tables
     private array $urlPool              = [];   // url_string -> true
     private array $urlTokens            = [];   // url_string -> int token
+    private array $urlTokensShifted     = [];   // url_string -> int token * DATE_COUNT
     private array $urlStrings           = [];   // int token -> url_string
     private int $urlCount               = 268;
 
     private array $dateChars            = [];   // date_string -> 2 byte packed cha
     private array $dateStrings          = [];   // int token -> date_string "2026-01-01"
+    private array $dateTokens           = [];   // date_string -> int token
     private int $dateCount              = 2008;
 
 }

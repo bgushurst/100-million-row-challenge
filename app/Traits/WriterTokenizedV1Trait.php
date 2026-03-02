@@ -7,10 +7,10 @@ trait WriterTokenizedV1Trait {
     /**
      * This writer version is currently running in around 165ms
      */
-    private function write(): void
+    private function write(array $data): void
     {
         // Hoist any class variables
-        $accumulator = $this->data;
+        $accumulator = $data;
         $outputPath = $this->outputPath;
 
         // Build json key caches

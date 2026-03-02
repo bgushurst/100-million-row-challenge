@@ -81,7 +81,7 @@ trait LoaderLegacyTraitV2 {
 
         $totalScore = array_sum($scores);
 
-        fprintf(STDERR, "Calibration: [%s] total=%d\n", implode(', ', $scores), $totalScore);
+        //fprintf(STDERR, "Calibration: [%s] total=%d\n", implode(', ', $scores), $totalScore);
 
         // Phase 3: Calculate boundaries based on calibration scores
         $fileSize = filesize($inputPath);
@@ -180,7 +180,7 @@ trait LoaderLegacyTraitV2 {
         array $scores,
         int $totalScore
     ): array {
-        $t0 = hrtime(true);
+        //$t0 = hrtime(true);
 
         $boundaries = [];
         $cursor = 0;
@@ -208,7 +208,7 @@ trait LoaderLegacyTraitV2 {
             $boundaries[$i] = ['start' => $start, 'end' => $end];
         }
 
-        printf("Chunk Calculation took %.2fms\n", (hrtime(true) - $t0) / 1e6);
+        //printf("Chunk Calculation took %.2fms\n", (hrtime(true) - $t0) / 1e6);
 
         return $boundaries;
     }
